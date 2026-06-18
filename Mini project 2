@@ -1,0 +1,43 @@
+// Install express first: npm install express
+const express = require('express');
+const app = express();
+const PORT = 3000;
+
+const employees = [
+  {
+    "id": 1,
+    "name": "Sai Deepthi",
+    "email": "sai.deepthi@example.com",
+    "department": "IT",
+    "designation": "Software Engineer",
+    "salary": 75000,
+    "hireDate": "2023-01-15"
+  },
+  {
+    "id": 2,
+    "name": "Asritha Devi",
+    "email": "asritha.devi@example.com",
+    "department": "HR",
+    "designation": "HR Executive",
+    "salary": 52000,
+    "hireDate": "2022-06-20"
+  },
+  {
+    "id": 3,
+    "name": "Sai Amrutha",
+    "email": "sai.amrutha@example.com",
+    "department": "Finance",
+    "designation": "Accountant",
+    "salary": 60000,
+    "hireDate": "2021-11-10"
+  }
+];
+
+// Endpoint matching your screenshot path
+app.get('/employees', (req, res) => {
+  res.json(employees);
+});
+
+app.listen(PORT, () => {
+  console.log(`Server running at http://localhost:${PORT}/employees`);
+});
