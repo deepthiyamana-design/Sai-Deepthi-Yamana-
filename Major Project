@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="te">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Inventory Management System</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #f7f9fa;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            background-color: #ffffff;
+            width: 100%;
+            max-width: 800px;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        h1 {
+            color: #333333;
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        /* Navigation Tabs */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #eeeeee;
+            padding-bottom: 10px;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #666666;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .tab-btn:hover {
+            background-color: #f0f0f0;
+            color: #007bff;
+        }
+
+        .tab-btn.active {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        h2 {
+            color: #333333;
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        /* Table Styling */
+        .table-container {
+            margin-bottom: 30px;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th {
+            background-color: #007bff;
+            color: white;
+            text-align: left;
+            padding: 12px 15px;
+            font-weight: 600;
+            font-size: 15px;
+        }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eeeeee;
+            color: #444444;
+            font-size: 15px;
+        }
+
+        hr {
+            border: 0;
+            border-top: 1px solid #eeeeee;
+            margin: 25px 0;
+        }
+
+        /* Form Styling */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: #000000;
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #cccccc;
+            border-radius: 4px;
+            font-size: 15px;
+            color: #333333;
+            outline: none;
+            background-color: white;
+        }
+
+        input:focus, select:focus {
+            border-color: #007bff;
+        }
+
+        .btn-submit {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 15px;
+            font-weight: 500;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-submit:hover {
+            background-color: #218838;
+        }
+
+        /* Reports Cards Styling */
+        .report-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .report-card {
+            background-color: #f8f9fa;
+            border-left: 4px solid #007bff;
+            padding: 20px;
+            border-radius: 4px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+
+        .report-card.green { border-left-color: #28a745; }
+        .report-card.orange { border-left-color: #fd7e14; }
+
+        .report-card h3 {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .report-card p {
+            font-size: 24px;
+            font-weight: 700;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Inventory Dashboard</h1>
+
+        <!-- Navigation Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="openTab('stocks-tab')">Stocks</button>
+            <button class="tab-btn" onclick="openTab('suppliers-tab')">Suppliers</button>
+            <button class="tab-btn" onclick="openTab('reports-tab')">Reports</button>
+        </div>
+
+        <!-- STOCKS TAB -->
+        <div id="stocks-tab" class="tab-content active">
+            <div class="table-container">
+                <h2>Current Stock</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Item Name</th>
+                            <th>Supplier</th>
+                            <th>Quantity</th>
+                        </tr>
+                    </thead>
+                    <tbody id="stock-list">
+                        <!-- Default Row -->
+                        <tr><td colspan="4" style="text-align: center; color: #999;">No stocks added yet.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <hr>
+            <h2>Add New Stock</h2>
+            <form id="stock-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="stockName">Item Name</label>
+                        <input type="text" id="stockName" placeholder="e.g., Laptops" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="stockSupplier">Select Supplier</label>
+                        <select id="stockSupplier" required>
+                            <option value="">-- Choose Supplier --</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="stockQty">Quantity</label>
+                    <input type="number" id="stockQty" placeholder="e.g., 10" min="1" required>
+                </div>
+                <button type="submit" class="btn-submit">Add Stock</button>
+            </form>
+        </div>
+
+        <!-- SUPPLIERS TAB -->
+        <div id="suppliers-tab" class="tab-content">
+            <div class="table-container">
+                <h2>Suppliers List</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Supplier ID</th>
+                            <th>Supplier Name</th>
+                            <th>Contact / City</th>
+                        </tr>
+                    </thead>
+                    <tbody id="supplier-list">
+                        <!-- Default Row -->
+                        <tr><td colspan="3" style="text-align: center; color: #999;">No suppliers added yet.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <hr>
+            <h2>Add New Supplier</h2>
+            <form id="supplier-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="supplierName">Supplier Name</label>
+                        <input type="text" id="supplierName" placeholder="e.g., Dell Tech" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="supplierContact">Contact / Info</label>
+                        <input type="text" id="supplierContact" placeholder="e.g., Hyderabad" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn-submit">Add Supplier</button>
+            </form>
+        </div>
+
+        <!-- REPORTS TAB -->
+        <div id="reports-tab" class="tab-content">
+            <h2>Inventory Summary Report</h2>
+            <div class="report-grid">
+                <div class="report-card">
+                    <h3>Total Items Type</h3>
+                    <p id="rep-total-items">0</p>
+                </div>
+                <div class="report-card green">
+                    <h3>Total Stock Qty</h3>
+                    <p id="rep-total-qty">0</p>
+                </div>
+                <div class="report-card orange">
+                    <h3>Total Suppliers</h3>
+                    <p id="rep-total-suppliers">0</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Data arrays for calculation
+        let stocks = [];
+        let suppliers = [];
+
+        // Tab Switching Logic
+        function openTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+
+            if(tabId === 'reports-tab') {
+                updateReports();
+            }
+        }
+
+        // Add Supplier Logic
+        const supplierForm = document.getElementById('supplier-form');
+        const supplierList = document.getElementById('supplier-list');
+        const stockSupplierDropdown = document.getElementById('stockSupplier');
+
+        supplierForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('supplierName').value.trim();
+            const contact = document.getElementById('supplierContact').value.trim();
+            const id = 'SUP-' + (suppliers.length + 101);
+
+            suppliers.push({ id, name, contact });
+            updateSupplierTable();
+            updateDropdown();
+            supplierForm.reset();
+        });
+
+        function updateSupplierTable() {
+            supplierList.innerHTML = '';
+            suppliers.forEach(sup => {
+                const row = `<tr><td>${sup.id}</td><td>${sup.name}</td><td>${sup.contact}</td></tr>`;
+                supplierList.innerHTML += row;
+            });
+        }
+
+        function updateDropdown() {
+            stockSupplierDropdown.innerHTML = '<option value="">-- Choose Supplier --</option>';
+            suppliers.forEach(sup => {
+                stockSupplierDropdown.innerHTML += `<option value="${sup.name}">${sup.name}</option>`;
+            });
+        }
+
+        // Add Stock Logic
+        const stockForm = document.getElementById('stock-form');
+        const stockList = document.getElementById('stock-list');
+
+        stockForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('stockName').value.trim();
+            const supplier = document.getElementById('stockSupplier').value;
+            const qty = parseInt(document.getElementById('stockQty').value);
+            const id = 'STK-' + (stocks.length + 1001);
+
+            stocks.push({ id, name, supplier, qty });
+            updateStockTable();
+            stockForm.reset();
+        });
+
+        function updateStockTable() {
+            stockList.innerHTML = '';
+            stocks.forEach(stk => {
+                const row = `<tr><td>${stk.id}</td><td>${stk.name}</td><td>${stk.supplier}</td><td>${stk.qty}</td></tr>`;
+                stockList.innerHTML += row;
+            });
+        }
+
+        // Update Reports Logic
+        function updateReports() {
+            document.getElementById('rep-total-items').innerText = stocks.length;
+            
+            let totalQty = stocks.reduce((sum, item) => sum + item.qty, 0);
+            document.getElementById('rep-total-qty').innerText = totalQty;
+            
+            document.getElementById('rep-total-suppliers').innerText = suppliers.length;
+        }
+    </script>
+</body>
+</html>
